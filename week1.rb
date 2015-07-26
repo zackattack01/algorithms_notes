@@ -1,5 +1,5 @@
 require 'byebug'
-##with iterative method break at midpoint or string
+##with iterative method break at midpoint of string
 def string_reverse(str)
   return str if str.length == 1
   str[-1] + string_reverse(str[0..-2]) 
