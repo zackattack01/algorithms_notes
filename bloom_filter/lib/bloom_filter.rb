@@ -5,7 +5,6 @@ class BloomFilter
   attr_reader :failure_rate, :capacity, :num_bits, :bit_array, :count,
               :bits_flipped, :hash_num, :random_variations
 
-  # Here be math.
   def self.required_bits(capacity, failure_rate)
     (-(capacity * Math.log(failure_rate)).fdiv(Math.log(2) ** 2)).round
   end
@@ -14,7 +13,6 @@ class BloomFilter
     (Math.log(2) * (num_bits.fdiv(capacity))).ceil
   end
 
-  # Now you.
   def initialize(capacity, failure_rate = 0.001)
     # the asymptotic rate of false positives
     @failure_rate = failure_rate
@@ -137,7 +135,6 @@ class BloomFilter
     end
 
     def add_filter!
-      # Add a new filter to your collection of Bloom Filters.
       # The new filter's capacity should be scaled by the size scale factor.
       cap = current_filter.capacity * SIZE_SCALE_FACTOR
       # Its failure rate should be scaled by the failure scale factor raised to

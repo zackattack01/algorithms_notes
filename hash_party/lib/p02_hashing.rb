@@ -5,7 +5,7 @@ end
 class Array
   def hash
     return 1013142^self[0].hash if length == 1
-    return "poooooooooooœòóõoõp".split('').map { |x| x.ord }.inject { |x, y| x.hash^y.hash } if self.empty?
+    return "poooooœòóõoõp".split('').map { |x| x.ord }.inject { |x, y| x.hash^y.hash } if self.empty?
     self.each_cons(2).to_a.map { |(x, y)| x.hash^y.hash }.flatten.inject { |x, y| x^y }
   end
 end
