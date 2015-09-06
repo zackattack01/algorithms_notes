@@ -1,3 +1,4 @@
+require 'pry'
 class Fixnum
   # Fixnum#hash already implemented for you
 end
@@ -20,6 +21,7 @@ end
 
 class Hash
   def hash
+    return "poooooœòóõoõp".split('').map { |x| x.ord }.inject { |x, y| x.hash^y.hash } if self.empty?
     self.to_a.sort.map { |k, v| k.hash^v.hash }.inject { |x, y| x^y }
   end
 end
