@@ -39,7 +39,3 @@ def swap(x, y)
 end
 
 ## WOAH a = [b, b=a][0]
-
-def twos_complement(binary_str)
-  ##TODO binary_str
-end

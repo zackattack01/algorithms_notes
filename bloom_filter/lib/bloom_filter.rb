@@ -1,4 +1,5 @@
 require 'murmurhash3'
+require 'pry'
 
 class BloomFilter
   attr_reader :failure_rate, :capacity, :num_bits, :bit_array, :count,
@@ -22,7 +23,8 @@ class BloomFilter
     # the required number of bits in the array:
     @num_bits = BloomFilter.required_bits(capacity, failure_rate)
     # our bit array uses true/false instead of 0/1:
-    @bit_array = {}
+    generate_new_filter
+
     @capacity.times { |i| @bit_array[i] = false }
     # the number of unique additions to the filter:
     @count = 0
@@ -32,33 +34,36 @@ class BloomFilter
     @hash_num = BloomFilter.required_hashes(capacity, @num_bits)
     # random bytes that we'll use to generate new composite hashes:
     @random_variations = [] 
+    generate_hash_variations
+  end
+
+  def generate_new_filter
+    @bit_array = Array.new(@num_bits, false)
   end
 
   def insert(key)
-    # Use all of your hash functions and see if the bits at those indices
-    # have been flipped. If any of them haven't, flip 'em.
+    added = false
     hashed = hash(key.hash)
     @random_variations.each do |var|
-      unless @bit_array[hashed^var]
-        @bit_array[hashed^var] = true
+      idx = hash(hashed^var) % @num_bits
+      unless @bit_array[idx]
+        added = true
+        @bit_array[idx] = true
         @bits_flipped += 1
       end
     end
-    # Then return true or false and/or increment count, depending on whether
-    # any bits were flipped.
-    #
-    # (Note: this means that whenever there's a collision, your BloomFilter's
-    # count will not increase.)
+
+    @count += 1 if added
+    count
   end
 
   def include?(key)
-    # Go through all of your composite hash functions and see if any of those
-    # bits are not flipped.
-    @random_variations.all? { |var| @bit_array[hash(key.hash)^var] }
+    hashed = hash(key.hash)
+    @random_variations.all? { |var| @bit_array[(hash(hashed^var) % @num_bits)] }
   end
 
   def clear
-    # Clean out your Bloom Filter, you filthy child.
+    generate_new_filter
   end
 
   def inspect
@@ -69,30 +74,26 @@ class BloomFilter
   end
 
   def merge!(other_filter)
-    # Merge together two Bloom Filters!
-    #
-    # Make sure that they both have the same parameters. Or else
-    # all hell will break loose. Can you figure out why?
+    unless other_filter.is_a?(BloomFilter) && 
+        other_filter.num_bits == num_bits  &&
+        other_filter.hash_num == hash_num
+      raise ArgumentError 
+    end
+    bit_array.each_with_index do |bit_val, idx|
+      next if bit_val
+      bit_array[idx] = true if other_filter.bit_array[idx]
+    end
   end
 
   private
 
-  # Use this hash function! Note that it only hashes other numbers.
   def hash(num)
     MurmurHash3::V32.int64_hash(num)
   end
 
-  def hashed_index(key, i)
-    # Maybe now is the time to try out that XORing and modulo trick? Hmmmmmm...d
-    @bit_array[key % i]
-  end
-
-  # Make sure you deterministically generate your variations. Otherwise your
-  # merge isn't going to work. However, to maintain your false positive rate,
-  # they also have to be pretty random. See what you can come up with.
   def generate_hash_variations
-    @hash_nums.times do |i|
-      @random_variations << hash([*i..@hash_nums])
+    @hash_num.times do |i|
+      @random_variations << hash([*i..i + 5].join('').to_i)
     end
   end
 
@@ -107,36 +108,43 @@ class BloomFilter
       # approach your failure rate by multiplying their failure rates
       # by the failure scale factor, raised to increasing powers for every subsequent
       # Bloom Filter. Remember to do this for your first Bloom Filter too.
-      @bloom_filters # = ?
+      @bloom_filters = [BloomFilter.new(initial_capacity, failure_rate * FAILURE_SCALE_FACTOR)]
     end
 
     def count
-      # Count up all your insertions.
+      bloom_filters.map { |bf| bf.count }.inject(:+)
     end
 
     def insert(key)
-      # Insert into your current Bloom Filter. If it's full, you need to add
-      # a new filter.
+      insertion_count = current_filter.insert(key)
+      add_filter! if insertion_count > current_filter.capacity
     end
 
     def include?(key)
+      bloom_filters.each { |bf| return true if bf.include? key }
+      false
     end
 
     def merge!(other_filter)
-      # Merge two scalable Bloom Filters. Be sure to throw an error if the other
-      # filter isn't a scalable Bloom Filter.
+      raise ArgumentError unless other_filter.is_a?(BloomFilter::Scalable)
+      @bloom_filters = other_filter.bloom_filters + bloom_filters
     end
 
     private
 
     def current_filter
+      bloom_filters.last
     end
 
     def add_filter!
       # Add a new filter to your collection of Bloom Filters.
       # The new filter's capacity should be scaled by the size scale factor.
+      cap = current_filter.capacity * SIZE_SCALE_FACTOR
       # Its failure rate should be scaled by the failure scale factor raised to
       # (your number of filters) + 1.
+      fr = failure_rate * (FAILURE_SCALE_FACTOR ** (bloom_filters.length + 1))
+
+      bloom_filters << BloomFilter.new(cap, fr)
     end
   end
 
@@ -158,3 +166,7 @@ class BloomFilter
     rate
   end
 end
+
+# bf = BloomFilter.new(10_000, 0.001)
+# sbf = BloomFilter::Scalable.new(2, 0.001)
+# binding.pry
