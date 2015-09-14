@@ -2,7 +2,7 @@
 
 ## Big-Oh Notation
 
-- For a function given n, as n grows it is bounded above a constant multiple of this function
+- For a function given n, as n grows it is bounded above by a constant multiple of this function
 
 - Way of talking about the bounds of an algorithm dropping leading constants and lower-order factors
 
