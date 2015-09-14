@@ -6,7 +6,7 @@
   - where problem is broken down into smaller pieces and these are called recursively
 
 - Better than selection sort
-  - where repeated passes identify the min remaining el and swap that O(n²)
+  - where repeated passes identify the min remaining el and swap that. O(n²)
 
 - Better than insertion sort
   - where repeated passes identify where each el belongs in the sorted array that comes before it.  also O(n²) but can be good for small or already sorted lists
@@ -23,8 +23,9 @@
 [5, 4, 1, 8] ←    → [7, 2, 6, 3]
      ↓                   ↓
 [1, 4, 5, 8]  AND   [2, 3, 6, 7]
+          
           MERGE INTO 
-              ↓
+               ↓
     [1, 2, 3, 4, 5, 6, 7, 8]
 ```
 
