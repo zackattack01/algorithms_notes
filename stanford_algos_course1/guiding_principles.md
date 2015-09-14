@@ -8,11 +8,11 @@
 
 - Also bench marks for given n, but typically worst-case is the easiest to analyze and most important
 
-### Guiding Principle II: Ignore constants and lower order factors
+### Guiding Principle II: Ignore leading constants and lower order factors
 
-- Constant factors and lower order terms are generally ignored
-  - There will be big enough difference between languages, compilers, optimizations, etc that these can be tough to account for accurately
-  - These can also cause us lose focus of what can make our algorithms more scalable
+- Leading constant factors and lower order terms aren't typically taken into account in an analysis
+  - There will be big enough differences between languages, compilers, optimizations, etc that these can be tough to account for accurately
+  - These can also cause us lose focus of what will make our algorithms more scalable
 
 ### Guiding Principle III: Asymptotic Analysis
 
