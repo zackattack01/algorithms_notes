@@ -18,3 +18,12 @@
 - Check out the [wiki](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) for more info
 - Check out my ruby implementation [here](./stack.rb)
 
+#### Linked List
+- A sequential ordering of elements where each element points to the next
+  - Each element can also point to the previous in a doubly linked list
+- This is beneficial when you need order but don't want to allocate all of the data in a contiguous block of memory
+- Bad for indexing into, O(n)
+- Good for inserting or deleting an element in the first position (and the last position if it's known), O(1)
+- Check out the [wiki](https://en.wikipedia.org/wiki/Linked_list) for more info
+- Check out my ruby doubly linked list [here](./linked_list.rb)
+- Check out how [Robert W. Floyd](https://en.wikipedia.org/wiki/Robert_W._Floyd) would find a cycle in a linked list in ruby [here](../cool_algos/floyds_cycle_detection.rb)
